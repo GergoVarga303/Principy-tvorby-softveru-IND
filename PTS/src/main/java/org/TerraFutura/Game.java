@@ -92,7 +92,7 @@ public class Game implements TerraFuturaInterface {
     @Override
     public boolean activateCard(
             int playerId,
-            GridCoordinate card,
+            GridPosition card,
             List<Pair<Resource, GridPosition>> inputs,
             List<Pair<Resource, GridPosition>> outputs,
             List<GridPosition> pollution,
