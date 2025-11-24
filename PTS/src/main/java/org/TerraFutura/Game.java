@@ -1,4 +1,4 @@
-package main.java.org.TerraFutura;
+package org.TerraFutura;
 
 public class Game implements TerraFuturaInterface {
     private GameState state;
