@@ -1,5 +1,5 @@
 package org.TerraFutura;
-//not finished
+//wip
 public interface Effect {
 
 }
