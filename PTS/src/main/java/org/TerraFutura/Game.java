@@ -1,5 +1,7 @@
 package org.TerraFutura;
 
+import java.util.*;
+
 public class Game implements TerraFuturaInterface {
     private GameState state;
     private final int[] players;
