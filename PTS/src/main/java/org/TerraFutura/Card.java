@@ -224,11 +224,11 @@ public class Card {
                 '}';
         sb.append(card);
         if(upperEffect != null){
-            sb.append("Upper effect=");
+            sb.append("\nUpper effect=");
             sb.append(upperEffect.state());
         }
         if(lowerEffect != null){
-            sb.append("Lower effect=");
+            sb.append("\nLower effect=");
             sb.append(lowerEffect.state());
         }
         return sb.toString();
