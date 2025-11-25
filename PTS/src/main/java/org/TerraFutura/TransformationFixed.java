@@ -48,11 +48,34 @@ public class TransformationFixed implements Effect {
      */
     @Override
     public boolean check(List<Resource> input, List<Resource> output, int pollution) {
-        return input.equals(from)
-                && output.equals(to)
-                && this.pollution == pollution;
+        if(pollution != this.pollution) return false;
+        if(sameMultiset(input, from)) return false;
+        if(sameMultiset(output, to)) return false;
+        return true;
     }
 
+    /**
+     * Checks if two lists contain exactly the same multiset of resources
+     * (order does not matter, counts must match).
+     */
+    private boolean sameMultiset(List<Resource> a, List<Resource> b) {
+        if (a == null) a = Collections.emptyList();
+        if (b == null) b = Collections.emptyList();
+
+        if (a.size() != b.size()) return true;
+
+        Map<Resource, Integer> counts = new EnumMap<>(Resource.class);
+        for (Resource r : a) {
+            counts.put(r, counts.getOrDefault(r, 0) + 1);
+        }
+        for (Resource r : b) {
+            Integer c = counts.get(r);
+            if (c == null || c == 0) return true;
+            counts.put(r, c - 1);
+        }
+        return false;
+    }
+    
     /**
      * Simplified rules: no Assistance effects are supported in this project.
      *
@@ -77,3 +100,4 @@ public class TransformationFixed implements Effect {
         return obj.toString();
     }
 }
+
