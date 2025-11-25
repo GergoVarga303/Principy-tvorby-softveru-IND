@@ -1,4 +1,7 @@
-# Principy-tvorby-softveru
-chalpci, iba zakladne info k projektu. Ked zacnete robit nejaku class tak vytvorte novy branch a potom ked ju dokoncite spravte pull request a niekomu napiste nech vam to revisne
-Robime v java projekte PTS nie PTSD, lebo PTS je maven co chcel od nas Lukotka. A funguje tam uz ten json. 
-Ak sa da, komentujte funkcie a triedy nech niesme v tom strateny
+# Principy tvorby softvéru
+
+- Keď začnete robiť nejakú **class**, vytvorte **nový branch**.  
+- Keď ju dokončíte, spravte **pull request** a niekoho požiadajte, aby vám to **reviewol**.  
+- Programujeme v **Java projekte PTS** (nie PTSD), pretože PTS je **Maven projekt**, ktorý od nás chcel **Lukotka**.  
+- **JSON už v projekte funguje.**  
+- **Komentujte funkcie a triedy**, aby sme sa v kóde nestratili.
