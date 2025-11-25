@@ -1,5 +1,11 @@
 package org.TerraFutura;
-//not finished
-public interface Effect {
 
+import java.util.List;
+
+//wip
+//Component
+public interface Effect {
+    boolean check(List<Resource> input, List<Resource> output, int pollution);
+    boolean hasAssistance();
+    String state();
 }
