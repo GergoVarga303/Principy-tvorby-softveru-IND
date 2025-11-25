@@ -157,6 +157,9 @@ public class Card {
                 usedPollutionSpaces++;
             }
         }
+        if (usedPollutionSpaces == pollutionSpaces+1){
+            blockedByPollution = true;
+        }
     }
 
     // ---------- Effect checking (card + effect together) ----------
