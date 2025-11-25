@@ -215,11 +215,22 @@ public class Card {
      * Returns a simple textual representation of the card state
      */
     public String state() {
-        return "Card{" +
+        StringBuilder sb = new StringBuilder();
+        String card =  "Card{" +
                 "resources=" + resources +
                 ", pollutionSpaces=" + pollutionSpaces +
                 ", usedPollutionSpaces=" + usedPollutionSpaces +
                 ", blockedByPollution=" + blockedByPollution +
                 '}';
+        sb.append(card);
+        if(upperEffect != null){
+            sb.append("Upper effect=");
+            sb.append(upperEffect.state());
+        }
+        if(lowerEffect != null){
+            sb.append("Lower effect=");
+            sb.append(lowerEffect.state());
+        }
+        return sb.toString();
     }
 }
