@@ -212,14 +212,6 @@ public class Card {
     }
 
     /**
-     * Returns true if either the upper or lower effect provides assistance.
-     */
-    public boolean hasAssistance() {
-        return (upperEffect != null && upperEffect.hasAssistance())
-                || (lowerEffect != null && lowerEffect.hasAssistance());
-    }
-
-    /**
      * Returns a simple textual representation of the card state
      */
     public String state() {
