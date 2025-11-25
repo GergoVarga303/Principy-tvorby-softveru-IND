@@ -49,8 +49,8 @@ public class TransformationFixed implements Effect {
     @Override
     public boolean check(List<Resource> input, List<Resource> output, int pollution) {
         if(pollution != this.pollution) return false;
-        if(sameMultiset(input, from)) return false;
-        if(sameMultiset(output, to)) return false;
+        if(!sameMultiset(input,from)) return false;
+        if(!sameMultiset(output,to)) return false;
         return true;
     }
 
@@ -62,7 +62,7 @@ public class TransformationFixed implements Effect {
         if (a == null) a = Collections.emptyList();
         if (b == null) b = Collections.emptyList();
 
-        if (a.size() != b.size()) return true;
+        if (a.size() != b.size()) return false;
 
         Map<Resource, Integer> counts = new EnumMap<>(Resource.class);
         for (Resource r : a) {
@@ -70,10 +70,10 @@ public class TransformationFixed implements Effect {
         }
         for (Resource r : b) {
             Integer c = counts.get(r);
-            if (c == null || c == 0) return true;
+            if (c == null || c == 0) return false;
             counts.put(r, c - 1);
         }
-        return false;
+        return true;
     }
     
     /**
@@ -100,4 +100,5 @@ public class TransformationFixed implements Effect {
         return obj.toString();
     }
 }
+
 
