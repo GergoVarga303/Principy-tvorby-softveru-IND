@@ -1,4 +1,4 @@
-package main.java.org.TerraFutura;
+package org.TerraFutura;
 
 import  java.util.*;
 
