@@ -96,8 +96,8 @@ public class Game implements TerraFuturaInterface {
             List<Pair<Resource, GridPosition>> inputs,
             List<Pair<Resource, GridPosition>> outputs,
             List<GridPosition> pollution,
-            Integer otherPlayerId,
-            GridPosition otherCard) {
+            Optional<Integer> otherPlayerId,
+            Optional<GridPosition> otherCard) {
       
         if (!isValidPlayer(playerId)) {
             return false;
