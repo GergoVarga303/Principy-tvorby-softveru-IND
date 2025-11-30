@@ -189,7 +189,6 @@ public class Card {
      * @return true if all checks pass and the lower effect allows it
      */
     public boolean checkLower(List<Resource> input, List<Resource> output, int pollution) {
-        if (!internalCommonCheck(input, output,pollution)) return false;
         return lowerEffect != null && lowerEffect.check(input, output, pollution);
     }
 
