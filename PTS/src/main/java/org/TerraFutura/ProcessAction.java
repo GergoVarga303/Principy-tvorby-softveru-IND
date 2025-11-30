@@ -53,11 +53,9 @@ public class ProcessAction {
 
         Map<GridPosition, List<Resource>> outputs_positionToResources = mapPositionToResources(outputs);
 
-        // 4) Start detailed validation on grid cards & states
-        //    We will collect references to the concrete Card instances involved so we can do operations on them.
         Map<GridPosition, Card> inputs_positionToCard = new HashMap<>();
         Map<GridPosition, Card> outputs_positionToCard = new HashMap<>();
-        //List<CardPollutionPlacement> pollutionPlacements = new ArrayList<>();
+
         Map<Card, List<Resource>> pollution_cardToAmount = new HashMap<>();
 
         //This assigns pollution amount to add to each card and validates those cards
@@ -72,7 +70,6 @@ public class ProcessAction {
                 pollutionToAdd.add(Resource.Pollution);
                 pollution_cardToAmount.put(card, pollutionToAdd);
             }
-            //else pollution_cardToAmount.put(card, pollution_cardToAmount.get(card) + 1);
             else pollution_cardToAmount.get(card).add(Resource.Pollution);
         }
         //This checks whether it is possible to place given amounts of pollution on given cards
