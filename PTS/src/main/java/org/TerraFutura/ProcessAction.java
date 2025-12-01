@@ -7,7 +7,13 @@ public class ProcessAction {
 
 
     /**
-     * @param activatingCard this processes it's lowerEffect if possible.
+     * latest change: added handling of upperEffects, given that they are implemented the same way as lowerEffects
+     *                the function now also returns false if there is more than one card on the output, making some
+     *                previously implemented checks excessive.
+     * We enforce that the Pair<Resource, GridPosition> contains non-null values, we consider it invalid input.
+     * It doesn't make much sense to take resource from nowhere as much as to take nothing from somewhere, and then add
+     * it to the list of inputs or outputs, so we count on it not happening and return false if it would.
+     * @param activatingCard this processes it's lowerEffect if possible. //now also it's upperEffect.
      * @param grid this is a concrete player's grid used to access player's cards and resources.
      * @param inputs these pairs contain position mapped to a resource that effect requires on input.
      * @param outputs these pairs contain position mapped to a resource that effect requires on output.
@@ -27,7 +33,7 @@ public class ProcessAction {
         if (activatingCard == null || grid == null) {
             return false;
         }
-
+        //we cannot return false when outputs = null, simply because some effect may produc pollution only
         inputs = (inputs == null) ? Collections.emptyList() : inputs;
         outputs = (outputs == null) ? Collections.emptyList() : outputs;
         pollution = (pollution == null) ? Collections.emptyList() : pollution;
@@ -35,18 +41,35 @@ public class ProcessAction {
         // we accumulate resources to later check for their validity and effects validity
         List<Resource> inputResources = new ArrayList<>();
         for (Pair<Resource, GridPosition> p : inputs) {
+            if(p.getFirst() == null || p.getSecond() == null) return false;
             inputResources.add(p.getFirst());
+        }
+        //in this accumulation we also check whether output all goes to the same card, otherwise we return false
+        //be wary, because null could get dereferenced, if altered incorrectly.
+        //these are relevant null checks & it's ugly, because it's refactoring.
+        GridPosition outputCardUnique = null;
+        if(!outputs.isEmpty())
+        {
+            if(outputs.get(0) != null) outputCardUnique = outputs.get(0).getSecond();
+            else return false;
+            if(!grid.getCard(outputCardUnique).isPresent() || grid.getCard(outputCardUnique).get() != activatingCard)
+                return false;
         }
         List<Resource> outputResources = new ArrayList<>();
         for (Pair<Resource, GridPosition> p : outputs) {
+            if(p.getSecond() == null || p.getFirst()==null) return false;
+            if((outputCardUnique.getX() != p.getSecond().getX()) || (outputCardUnique.getY() != p.getSecond().getY()))
+            {return false;}
+
             outputResources.add(p.getFirst());
         }
         int pollutionCount = pollution.size();
 
         // By this we check whether the given card has an effect that transforms inputResources to outputResources
         // with given pollutionCount, what it also implicitly checks for is validity of Resources.
+        boolean matchesCardUpperEffect = activatingCard.check(inputResources, outputResources, pollutionCount);
         boolean matchesCardLowerEffect = activatingCard.checkLower(inputResources, outputResources, pollutionCount);
-        if (!matchesCardLowerEffect) return false;
+        if (!matchesCardLowerEffect && !matchesCardUpperEffect) return false;
 
         // We assign resources to positions, since validity of resources has been checked for.
         Map<GridPosition, List<Resource>> inputs_positionToResources = mapPositionToResources(inputs);
@@ -59,7 +82,9 @@ public class ProcessAction {
         Map<Card, List<Resource>> pollution_cardToAmount = new HashMap<>();
 
         //This assigns pollution amount to add to each card and validates those cards
+        //here if we encounter null, we just return false
         for(GridPosition coordinate : pollution) {
+            if(coordinate == null) return false;
             Optional<Card> optCard = grid.getCard(coordinate);
             if (!optCard.isPresent()) return false;
             Card card = optCard.get();
