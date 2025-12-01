@@ -174,8 +174,6 @@ public class Card {
      * @return true if all checks pass and the upper effect allows it
      */
     public boolean check(List<Resource> input, List<Resource> output, int pollution) {
-
-        if(!internalCommonCheck(input,output,pollution)) return false;
         return upperEffect != null && upperEffect.check(input, output, pollution);
     }
 
@@ -190,24 +188,6 @@ public class Card {
      */
     public boolean checkLower(List<Resource> input, List<Resource> output, int pollution) {
         return lowerEffect != null && lowerEffect.check(input, output, pollution);
-    }
-
-    /**
-     * Shared validation logic for both check() and checkLower().
-     * Ensures input resources can be taken and output (including pollution) can be placed.
-     *
-     * @param input     resources to take
-     * @param output    resources to place
-     * @param pollution number of pollution cubes to add
-     * @return true if both resource removal and placement are possible
-     */
-    private boolean internalCommonCheck(List<Resource> input, List<Resource> output, int pollution) {
-        if(!canGetResources(input)) return false;
-        List<Resource> tmpOutput = new ArrayList<>(output);
-        for(int i = 0; i<pollution; i++) {
-            tmpOutput.add(Resource.Pollution);
-        }
-        return canPutResources(tmpOutput);
     }
 
     /**
