@@ -7,11 +7,12 @@ import java.util.List;
 //Composite
 //we use the class if a certain card has a possibility to choose from 2 or more Lower or upper effects
 public class EffectOr implements Effect{
-    private final ArrayList<Effect> effects;
+    private final ArrayList<Effect> effects = new ArrayList<>();
 
-
-    public EffectOr(List<Effect> effects){
-        this.effects = new ArrayList<>(effects);
+    //addChild method so no constructors, so you don't have to create a List of Effects to create an
+    //instance of EffectOr, you just simply add the Effects
+    public void addEffect(Effect child){
+        effects.add(child);
     }
 
     //if any of the effects can execute the desired trade, then return true
@@ -26,6 +27,8 @@ public class EffectOr implements Effect{
         return hasTrue;
     }
 
+
+    //simplified rules, so no Assistance
     @Override
     public boolean hasAssistance() {
         return false;
