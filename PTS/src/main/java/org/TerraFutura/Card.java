@@ -62,7 +62,7 @@ public class Card {
 
     /** Total number of pollution cubes on this card (safe + centre). */
     public int getPollutionOnCard() {
-        return usedPollutionSpaces + (blockedByPollution ? 1 : 0);
+        return usedPollutionSpaces;
     }
 
     public boolean isBlockedByPollution() {
