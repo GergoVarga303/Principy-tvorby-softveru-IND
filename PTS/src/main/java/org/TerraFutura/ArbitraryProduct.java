@@ -18,11 +18,6 @@ public class ArbitraryProduct implements Effect{
         return false;
     }
 
-    //simplified rules
-    @Override
-    public boolean hasAssistance() {
-        return false;
-    }
 
     //state will always be the same, because we can use any product
     @Override

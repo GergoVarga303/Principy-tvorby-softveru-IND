@@ -1,5 +1,7 @@
 package org.TerraFutura;
 
+import java.util.List;
+
 /**
  * Represents a single player in the Terra Futura game.
  * A player owns a personal grid and chooses both an activation pattern
@@ -14,9 +16,15 @@ public class Player {
     private ScoringMethod scoringMethod=null;
     private ActivationPattern activationPattern=null;
 
-    public Player(int id, Grid grid) {
+    //treba enkapsulaciu vyriesit
+    public final Pair<ActivationPattern,ActivationPattern> activationPatterns;
+    public final Pair<ScoringMethod,ScoringMethod> methods;
+
+    public Player(int id, Grid grid, Pair<ActivationPattern,ActivationPattern> activationPatterns,Pair<ScoringMethod,ScoringMethod> methods) {
         this.id = id;
         this.grid = grid;
+        this.activationPatterns = activationPatterns;
+        this.methods = methods;
     }
 
     public int getId() {

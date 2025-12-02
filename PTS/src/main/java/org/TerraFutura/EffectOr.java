@@ -27,20 +27,16 @@ public class EffectOr implements Effect{
         return hasTrue;
     }
 
-
-    //simplified rules, so no Assistance
-    @Override
-    public boolean hasAssistance() {
-        return false;
-    }
-
     //return simple textual information of the cards effects
     @Override
     public String state() {
         StringBuilder sb = new StringBuilder();
         for(Effect e : effects){
             sb.append(e.state());
-            sb.append('\n');
+            if (!e.equals(effects.getLast())){
+                sb.append("\nOR\n");
+            }
+            sb.append("\n");
         }
         return sb.toString();
     }
