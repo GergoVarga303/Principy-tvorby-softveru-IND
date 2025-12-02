@@ -42,7 +42,6 @@ public class Game implements TerraFuturaInterface {
         this.onTurn = 0;
         this.turnNumber = 0;
         this.state = GameState.TakeCardNoCardDiscarded;
-        this.playersActivationPattern = new ArrayList<>();
     }
 
     public GameState getState() {
@@ -131,7 +130,7 @@ public class Game implements TerraFuturaInterface {
             System.out.println("Player " + playerId + " is not in correct state");
             return false;
         }
-        Pile pile= getPile(source.deck);
+        Pile pile= getPile(source.getDeck());
         if (pile == null) {
             System.out.println("pile is null");
             return false;
@@ -143,7 +142,7 @@ public class Game implements TerraFuturaInterface {
             return false;
         }
 
-        boolean result = moveCard.moveCard(pile,destination,grid, source.index);
+        boolean result = moveCard.moveCard(pile,destination,grid, source.getIndex());
 
         if(result){
             state = GameState.ActivateCard;
