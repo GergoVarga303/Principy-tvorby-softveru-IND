@@ -1,7 +1,7 @@
 package org.TerraFutura;
 
 import org.json.JSONObject;
-
+import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
 public class Game implements TerraFuturaInterface {
@@ -18,14 +18,17 @@ public class Game implements TerraFuturaInterface {
     private final GameObserver gameObserver;
     private final List<Integer> playersActivationPattern;
 
-    public Game(int numberOfPlayers,Pile pileI, Pile pileII, GameObserver gameObserver) {
+    public Game(int numberOfPlayers,Pile pileI, Pile pileII, GameObserver gameObserver, List<Pair<ActivationPattern,ActivationPattern>> activationPatterns) {
         if (numberOfPlayers < 2 || numberOfPlayers > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
 
         this.players = new Player[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
-            players[i] = new Player(i,new Grid());
+            if(activationPatterns.get(i) == null) {
+                throw new IllegalArgumentException("Invalid activation pattern list");
+            }
+            players[i] = new Player(i,new Grid(),activationPatterns.get(i));
         }
 
         this.pileI = pileI;
@@ -60,12 +63,8 @@ public class Game implements TerraFuturaInterface {
         return turnNumber;
     }
 
-    public void setStartingPlayer(int startingPlayer) {
-        if (startingPlayer < 0 || startingPlayer >= players.length) {
-            throw new IllegalArgumentException("Invalid Player");
-        }
-
-        this.startingPlayer = startingPlayer;
+    public void setStartingPlayer() {
+        this.startingPlayer = 0;
         this.onTurn = startingPlayer;
         this.turnNumber = 0;
         this.state = GameState.TakeCardNoCardDiscarded;
@@ -111,30 +110,45 @@ public class Game implements TerraFuturaInterface {
     }
 
     private boolean isValidPlayer(int playerId) {
-        return ((playerId >= 0 && playerId < players.length) && playerId == onTurn && state != GameState.Finish);
+        if ((playerId >= 0 && playerId < players.length) && playerId == onTurn && state != GameState.Finish){
+            return true;
+        }else{
+            System.out.println("Player " + playerId + " is not in activation pattern");
+            return false;
+        }
     }
 
     @Override
     public boolean takeCard(int playerId, CardSource source, GridPosition destination) {
         if (!isValidPlayer(playerId)) {
+            System.out.println("Player " + playerId + " cannot take card");
             return false;
         }
 
         if (state != GameState.TakeCardNoCardDiscarded &&
                 state != GameState.TakeCardCardDiscarded) {
+            System.out.println("Player " + playerId + " is not in correct state");
             return false;
         }
         Pile pile= getPile(source.deck);
-        if (pile == null) return false;
+        if (pile == null) {
+            System.out.println("pile is null");
+            return false;
+        }
 
         Grid grid= players[playerId].getGrid();
-        if(grid == null) return false;
+        if(grid == null){
+            System.out.println("grid is null");
+            return false;
+        }
 
         boolean result = moveCard.moveCard(pile,destination,grid, source.index);
 
         if(result){
             state = GameState.ActivateCard;
             notifyObservers();
+        }else{
+            System.out.println("move card failed");
         }
         return result;
     }
@@ -142,15 +156,20 @@ public class Game implements TerraFuturaInterface {
     @Override
     public boolean discardLastCardFromDeck(int playerId, Deck deck) {
         if (!isValidPlayer(playerId)) {
+            System.out.println("Player " + playerId + " cannot discard Last card from deck");
             return false;
         }
 
         if (state != GameState.TakeCardNoCardDiscarded) {
+            System.out.println("Player " + playerId + " is not in correct state");
             return false;
         }
 
         Pile pile= getPile(deck);
-        if(pile == null) return false;
+        if(pile == null) {
+            System.out.println("pile is null");
+            return false;
+        }
 
         try{
             pile.removeLastCard();
@@ -158,6 +177,7 @@ public class Game implements TerraFuturaInterface {
             notifyObservers();
             return true;
         }catch (Exception e){
+            System.out.println("discardLastCardFromDeck failed");
             return false;
         }
     }
@@ -173,26 +193,42 @@ public class Game implements TerraFuturaInterface {
             Optional<GridPosition> otherCard) {
 
         if (!isValidPlayer(playerId)) {
+            System.out.println("Player " + playerId + " cannot activate card");
             return false;
         }
         if (state != GameState.ActivateCard) {
+            System.out.println("Player " + playerId + " is not in correct state");
             return false;
         }
-        if(players[playerId].getGrid() == null) return false;
-        if(!players[playerId].getGrid().canBeActivated(card)) return false;
+        if(players[playerId].getGrid() == null) {
+            System.out.println("Grid is null");
+            return false;
+        }
+        if(!players[playerId].getGrid().canBeActivated(card)){
+            System.out.println("Grid can't be activated");
+            return false;
+        }
 
         Optional<Card> c = players[playerId].getGrid().getCard(card);
-        if(!c.isPresent()) return false;
+        if(!c.isPresent()) {
+            System.out.println("Player " + playerId +  " cannot get card");
+            return false;
+        }
         return processAction.activateCard(c.get(), players[playerId].getGrid(), inputs, outputs, pollution);
     }
 
     @Override
     public boolean turnFinished(int playerId) {
         if (!isValidPlayer(playerId)) {
+            System.out.println("Player " + playerId + " cannot turn finished");
             return false;
         }
         Grid grid= players[playerId].getGrid();
-        if(grid != null) grid.endTurn();
+        if(grid == null) {
+            System.out.println("grid is null");
+            return false;
+        }
+        grid.endTurn();
         if(onTurn == players.length-1) turnNumber++;
         onTurn = (onTurn + 1) % players.length;
         if(turnNumber == 9) {
@@ -209,18 +245,63 @@ public class Game implements TerraFuturaInterface {
     @Override
     public boolean selectActivationPattern(int playerId, int card) {
         if (!isValidPlayer(playerId)) {
+            System.out.println("Player " + playerId + " cannot select activation pattern");
             return false;
         }
 
         if (state != GameState.SelectActivationPattern) {
+            System.out.println("Incorrect state");
             return false;
         }
 
         onTurn = (onTurn + 1) % players.length;
 
-        playersActivationPattern.add(card);
+        if(card == 1) players[playerId].setActivationPattern(players[playerId].activationPatterns.getFirst());
+        else if (card == 2)players[playerId].setActivationPattern(players[playerId].activationPatterns.getSecond());
+        else {
+            System.out.println("Incorrect card integer");
+            return false;
+        }
 
-        if(onTurn == 0) state = GameState.SelectScoringMethod;
+        notifyObservers();
+        return true;
+    }
+
+    @Override
+    public boolean activationPatternActivateCard(int playerId,
+                                         GridPosition card,
+                                         List<Pair<Resource, GridPosition>> inputs,
+                                         List<Pair<Resource, GridPosition>> outputs,
+                                         List<GridPosition> pollution,
+                                         Optional<Integer> otherPlayerId,
+                                         Optional<GridPosition> otherCard){
+        ArrayList<SimpleEntry<Integer, Integer>> pattern = players[playerId].getActivationPattern().getPattern();
+        SimpleEntry<Integer, Integer> position = new SimpleEntry<>(card.getX(), card.getY());
+        if(!pattern.contains(position)) {
+            System.out.println("Incorrect position, pattern not found in activation pattern");
+            return false;
+        }
+        state = GameState.ActivateCard;
+        pattern.remove(position);
+        return activateCard(playerId, card, inputs, outputs, pollution, otherPlayerId, otherCard);
+    }
+
+    @Override
+    public boolean activationPatternTurnFinished(int playerId){
+        if (!isValidPlayer(playerId)) {
+            System.out.println("Player " + playerId + " cannot activate pattern turn finished");
+            return false;
+        }
+        Grid grid= players[playerId].getGrid();
+        if(grid == null) {
+            System.out.println("grid is null");
+            return false;
+        }
+        grid.endTurn();
+        if(onTurn == players.length-1) state = GameState.SelectScoringMethod;
+        onTurn = (onTurn + 1) % players.length;
+        state = GameState.SelectActivationPattern;
+        notifyObservers();
         return true;
     }
 
@@ -235,6 +316,7 @@ public class Game implements TerraFuturaInterface {
         }
 
         state = GameState.Finish;
+        notifyObservers();
         return true;
     }
 
