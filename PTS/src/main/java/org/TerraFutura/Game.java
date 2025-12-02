@@ -1,6 +1,5 @@
 package org.TerraFutura;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -16,8 +15,8 @@ public class Game implements TerraFuturaInterface {
     private final Pile pileII;
     private final MoveCard moveCard;
     private final ProcessAction processAction;
-    private final SelectReward selectReward;
     private final GameObserver gameObserver;
+    private final List<Integer> playersActivationPattern;
 
     public Game(int numberOfPlayers,Pile pileI, Pile pileII, GameObserver gameObserver) {
         if (numberOfPlayers < 2 || numberOfPlayers > 5) {
@@ -33,12 +32,12 @@ public class Game implements TerraFuturaInterface {
         this.pileII = pileII;
         this.moveCard = new MoveCard();
         this.processAction = new ProcessAction();
-        this.selectReward = new SelectReward();
         this.gameObserver = gameObserver;
         this.startingPlayer = 0;
         this.onTurn = 0;
         this.turnNumber = 0;
         this.state = GameState.TakeCardNoCardDiscarded;
+        this.playersActivationPattern = new ArrayList<>();
     }
 
     public GameState getState() {
@@ -164,7 +163,7 @@ public class Game implements TerraFuturaInterface {
     }
 
     @Override
-    public void activateCard(
+    public boolean activateCard(
             int playerId,
             GridPosition card,
             List<Pair<Resource, GridPosition>> inputs,
@@ -174,29 +173,17 @@ public class Game implements TerraFuturaInterface {
             Optional<GridPosition> otherCard) {
 
         if (!isValidPlayer(playerId)) {
-            return;
+            return false;
         }
         if (state != GameState.ActivateCard) {
-            return;
+            return false;
         }
+        if(players[playerId].getGrid() == null) return false;
+        if(!players[playerId].getGrid().canBeActivated(card)) return false;
 
-        state = GameState.SelectReward;
-    }
-
-    @Override
-    public void selectReward(int playerId, Resource resource) {
-        if (!isValidPlayer(playerId)) {
-            return;
-        }
-
-        if (state != GameState.SelectReward) {
-            return;
-        }
-        if(!selectReward.canSelectReward(resource)) return;
-
-        selectReward.selectReward(resource);
-        state = GameState.TakeCardNoCardDiscarded;
-        notifyObservers();
+        Optional<Card> c = players[playerId].getGrid().getCard(card);
+        if(!c.isPresent()) return false;
+        return processAction.activateCard(c.get(), players[playerId].getGrid(), inputs, outputs, pollution);
     }
 
     @Override
@@ -206,9 +193,12 @@ public class Game implements TerraFuturaInterface {
         }
         Grid grid= players[playerId].getGrid();
         if(grid != null) grid.endTurn();
-        turnNumber++;
-        onTurn = (startingPlayer + turnNumber) % players.length;
-        if (state != GameState.Finish) {
+        if(onTurn == players.length-1) turnNumber++;
+        onTurn = (onTurn + 1) % players.length;
+        if(turnNumber == 9) {
+            state = GameState.SelectActivationPattern;
+        }
+        else if(state == GameState.ActivateCard) {
             state = GameState.TakeCardNoCardDiscarded;
         }
 
@@ -226,9 +216,11 @@ public class Game implements TerraFuturaInterface {
             return false;
         }
 
+        onTurn = (onTurn + 1) % players.length;
 
-        state = GameState.SelectScoringMethod;
+        playersActivationPattern.add(card);
 
+        if(onTurn == 0) state = GameState.SelectScoringMethod;
         return true;
     }
 

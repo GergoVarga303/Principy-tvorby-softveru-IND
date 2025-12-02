@@ -27,13 +27,6 @@ public class EffectOr implements Effect{
         return hasTrue;
     }
 
-
-    //simplified rules, so no Assistance
-    @Override
-    public boolean hasAssistance() {
-        return false;
-    }
-
     //return simple textual information of the cards effects
     @Override
     public String state() {

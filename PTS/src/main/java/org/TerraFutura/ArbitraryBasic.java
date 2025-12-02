@@ -89,14 +89,6 @@ public class ArbitraryBasic implements Effect {
     }
 
     /**
-     * This effect never grants assistance.
-     */
-    @Override
-    public boolean hasAssistance() {
-        return false;
-    }
-
-    /**
      * Returns a simple textual representation of the effect.
      */
     @Override

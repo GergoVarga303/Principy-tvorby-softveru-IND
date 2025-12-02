@@ -74,16 +74,6 @@ public class TransformationFixed implements Effect {
         }
         return true;
     }
-    
-    /**
-     * Simplified rules: no Assistance effects are supported in this project.
-     *
-     * @return always false
-     */
-    @Override
-    public boolean hasAssistance() {
-        return false;
-    }
 
     /**
      * Produces a JSON representation of this effect.
