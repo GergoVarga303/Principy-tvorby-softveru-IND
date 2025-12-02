@@ -77,7 +77,7 @@ public class Game implements TerraFuturaInterface {
 
         result.put("state", state.toString());
         result.put("player", player.getId());
-        result.put("onTurn", turnNumber);
+        result.put("onTurn", onTurn);
         result.put("turnNumber", turnNumber);
         result.put("myGrid", new JSONObject(player.getGrid().state()));
 
@@ -347,7 +347,7 @@ public class Game implements TerraFuturaInterface {
         Grid grid = player.getGrid();
         for(GridPosition pos : GridPosition.values()){
             if(grid.getCard(pos).isPresent()){
-                result.addAll(grid.getCard(pos).get().getResourceList);
+                result.addAll(grid.getCard(pos).get().getResourceList());
             }
             else{continue;}
         }
