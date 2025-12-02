@@ -333,7 +333,7 @@ public class Game implements TerraFuturaInterface {
         ScoringMethod selected = players[playerId].getScoringMethod();
         selected.setAllResources(allResources);
         selected.selectThisMethodAndCalculate();
-        System.out.println(selected.state());
+        System.out.println("For player: " + playerId + " " + selected.state());
         
         if (onTurn == players.length -1) {
             state = GameState.Finish;
