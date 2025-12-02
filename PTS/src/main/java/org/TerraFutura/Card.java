@@ -118,6 +118,12 @@ public class Card {
         }
     }
 
+
+    //getter for all resources on this card
+    public List<Resource> getResourceList(){
+        return resources;
+    }
+
     /**
      * Checks if the given resources can be placed on this card.
      * Returns false if the card is blocked or the number of pollution cubes exceeds available slots.

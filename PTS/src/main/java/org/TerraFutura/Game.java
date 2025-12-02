@@ -16,9 +16,8 @@ public class Game implements TerraFuturaInterface {
     private final MoveCard moveCard;
     private final ProcessAction processAction;
     private final GameObserver gameObserver;
-    private final List<Integer> playersActivationPattern;
 
-    public Game(int numberOfPlayers,Pile pileI, Pile pileII, GameObserver gameObserver, List<Pair<ActivationPattern,ActivationPattern>> activationPatterns) {
+    public Game(int numberOfPlayers,Pile pileI, Pile pileII, GameObserver gameObserver, List<Pair<ActivationPattern,ActivationPattern>> activationPatterns ,List<Pair<ScoringMethod,ScoringMethod>> methods) {
         if (numberOfPlayers < 2 || numberOfPlayers > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
@@ -28,7 +27,10 @@ public class Game implements TerraFuturaInterface {
             if(activationPatterns.get(i) == null) {
                 throw new IllegalArgumentException("Invalid activation pattern list");
             }
-            players[i] = new Player(i,new Grid(),activationPatterns.get(i));
+            if(methods.get(i) == null){
+                throw new IllegalArgumentException("Invalid method list");
+            }
+            players[i] = new Player(i,new Grid(),activationPatterns.get(i),methods.get(i));
         }
 
         this.pileI = pileI;
@@ -93,7 +95,6 @@ public class Game implements TerraFuturaInterface {
         result.put("otherPlayers", others);*/
         result.put("pileI", new JSONObject(pileI.state()));
         result.put("pileII", new JSONObject(pileII.state()));
-        result.put("selectReward", new JSONObject(selectReward.state()));
         return result.toString();
     }
 
@@ -263,11 +264,9 @@ public class Game implements TerraFuturaInterface {
             return false;
         }
 
-        notifyObservers();
         return true;
     }
 
-    @Override
     public boolean activationPatternActivateCard(int playerId,
                                          GridPosition card,
                                          List<Pair<Resource, GridPosition>> inputs,
@@ -286,7 +285,6 @@ public class Game implements TerraFuturaInterface {
         return activateCard(playerId, card, inputs, outputs, pollution, otherPlayerId, otherCard);
     }
 
-    @Override
     public boolean activationPatternTurnFinished(int playerId){
         if (!isValidPlayer(playerId)) {
             System.out.println("Player " + playerId + " cannot activate pattern turn finished");
@@ -308,16 +306,53 @@ public class Game implements TerraFuturaInterface {
     @Override
     public boolean selectScoring(int playerId, int card) {
         if (!isValidPlayer(playerId)) {
+            System.out.println("Player " + playerId + " cannot select Scoring method");
             return false;
         }
 
         if (state != GameState.SelectScoringMethod) {
+            System.out.println("Incorrect state");
             return false;
         }
 
-        state = GameState.Finish;
-        notifyObservers();
+        onTurn = (onTurn + 1) % players.length;
+
+
+        if (card == 1){
+            players[playerId].setScoringMethod(players[playerId].methods.getFirst());
+        }
+        else if (card == 2){
+            players[playerId].setScoringMethod(players[playerId].methods.getSecond());
+
+        }
+        else {
+            System.out.println("Incorrect card integer");
+            return false;
+        }
+
+        List<Resource> allResources = getAllResources(players[playerId]);
+        ScoringMethod selected = players[playerId].getScoringMethod();
+        selected.setAllResources(allResources);
+        selected.selectThisMethodAndCalculate();
+        System.out.println(selected.state());
+        
+        if (onTurn == players.length -1) {
+            state = GameState.Finish;
+            notifyObservers();
+        }
         return true;
     }
+
+    private List<Resource> getAllResources(Player player){
+        List<Resource> result = new ArrayList<>();
+        Grid grid = player.getGrid();
+        for(GridPosition pos : GridPosition.values()){
+            if(grid.getCard(pos).isPresent()){
+                result.addAll(grid.getCard(pos).get().getResourceList);
+            }
+            else{continue;}
+        }
+        return result;
+    };
 
 }

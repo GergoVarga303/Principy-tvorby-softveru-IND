@@ -15,12 +15,16 @@ public class Player {
     private final Grid grid;
     private ScoringMethod scoringMethod=null;
     private ActivationPattern activationPattern=null;
-    public final Pair<ActivationPattern,ActivationPattern> activationPatterns;
 
-    public Player(int id, Grid grid, Pair<ActivationPattern,ActivationPattern> activationPatterns) {
+    //treba enkapsulaciu vyriesit
+    public final Pair<ActivationPattern,ActivationPattern> activationPatterns;
+    public final Pair<ScoringMethod,ScoringMethod> methods;
+
+    public Player(int id, Grid grid, Pair<ActivationPattern,ActivationPattern> activationPatterns,Pair<ScoringMethod,ScoringMethod> methods) {
         this.id = id;
         this.grid = grid;
         this.activationPatterns = activationPatterns;
+        this.methods = methods;
     }
 
     public int getId() {
