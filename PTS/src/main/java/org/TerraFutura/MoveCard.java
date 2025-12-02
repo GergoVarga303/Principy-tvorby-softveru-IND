@@ -16,8 +16,8 @@ public class MoveCard {
 
         Optional<Card> card = pile.getCard(cardIndex);
 
-        grid.putCard(gridCoordinate, card.orElse(null));
         pile.takeCard(cardIndex);
+        grid.putCard(gridCoordinate, card.orElse(null));
 
         return true;
     }
