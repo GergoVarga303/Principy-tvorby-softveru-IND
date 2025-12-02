@@ -33,7 +33,10 @@ public class EffectOr implements Effect{
         StringBuilder sb = new StringBuilder();
         for(Effect e : effects){
             sb.append(e.state());
-            sb.append('\n');
+            if (!e.equals(effects.getLast())){
+                sb.append("\nOR\n");
+            }
+            sb.append("\n");
         }
         return sb.toString();
     }
