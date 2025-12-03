@@ -16,7 +16,7 @@ public class Grid {
 
 
     public Optional<Card> getCard(GridPosition coordinate) {
-        return Optional.empty();
+        return Optional.ofNullable(board.get(coordinate));
     }
 
     //you can put cards only on neighbouring, not occupied positions, also you cannot put more than three cards in one
@@ -68,7 +68,8 @@ public class Grid {
 
     public boolean canBeActivated(GridPosition coordinate){
         SimpleEntry<Integer,Integer> pair = new SimpleEntry<>(coordinate.getX(),coordinate.getY());
-        if(neighbouringNotActivated.contains(coordinate) || pattern.contains(pair)){
+        if((neighbouringNotActivated.contains(coordinate) && !board.get(coordinate).isBlockedByPollution())
+                || pattern.contains(pair)){
             return true;
         }
         return false;
@@ -87,6 +88,21 @@ public class Grid {
     }
 
     public String state(){
-        return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Grid:\n");
+
+        List<GridPosition> coordinates = new ArrayList<>(board.keySet());
+        coordinates.sort(Comparator.comparingInt(GridPosition::getX).thenComparingInt(GridPosition::getY));
+
+        for (GridPosition coordinate : coordinates) {
+            Card card = board.get(coordinate);
+            sb.append("  ").append(coordinate)
+                    .append(": ")
+                    .append(card.state())
+                    .append(card.isBlockedByPollution() ? " [BLOCKED]" : "")
+                    .append("\n");
+        }
+        return sb.toString();
+
     }
 }

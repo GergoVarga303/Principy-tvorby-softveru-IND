@@ -6,7 +6,7 @@ public class MoveCard {
 
     public boolean moveCard(Pile pile, GridPosition gridCoordinate, Grid grid, int cardIndex) {
 
-        if (pile == null || gridCoordinate == null || grid == null || cardIndex < 0 || cardIndex > 4) {
+        if (pile == null || gridCoordinate == null || grid == null || cardIndex < -1 || cardIndex > 3) {
             return false;
         }
 
