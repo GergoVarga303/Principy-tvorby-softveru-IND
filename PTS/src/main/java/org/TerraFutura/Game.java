@@ -214,7 +214,16 @@ public class Game implements TerraFuturaInterface {
             System.out.println("Player " + playerId +  " cannot get card");
             return false;
         }
-        return processAction.activateCard(c.get(), players[playerId].getGrid(), inputs, outputs, pollution);
+        boolean result =  processAction.activateCard(c.get(), players[playerId].getGrid(), inputs, outputs, pollution);
+
+        //if we could activate that particular card, then we can set the card to activated,
+        //so grid can return the canBeActivated method correctly
+        if(result){
+            players[playerId].getGrid().setActivated(card);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -262,6 +271,9 @@ public class Game implements TerraFuturaInterface {
             System.out.println("Incorrect card integer");
             return false;
         }
+
+        //set the activation pattern in the grid too, so grid.canBeActivated works in this state too
+        players[playerId].getGrid().setActivationPattern(players[playerId].getActivationPattern().getPattern());
 
         return true;
     }
