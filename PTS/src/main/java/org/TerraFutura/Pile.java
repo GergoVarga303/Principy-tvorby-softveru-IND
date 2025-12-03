@@ -1,9 +1,6 @@
 package org.TerraFutura;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class Pile {
     private ArrayList<Card> hiddenCards;
@@ -19,27 +16,43 @@ public class Pile {
         }
     }
 
+    //player can choose, which card he would like to get from the Visible cards of a deck, so index
+    // 0 to 3, or he can draw from the top of the hidden pile with the index -1
     public Optional<Card> getCard(int index){
         if((index >=0 && index <=3)){
             return Optional.ofNullable(visibleCards.get(index));
         }
         else if(index == -1){
+            if(hiddenCards.isEmpty()){
+                return Optional.empty();
+            }
             return Optional.ofNullable(hiddenCards.getLast());
         }
         return Optional.empty();
     }
 
     public void takeCard(int index){
+        if (visibleCards.isEmpty()){
+            throw new NoSuchElementException("Out of Cards!");
+        }
         if(index == -1){
             hiddenCards.removeLast();
+            if(hiddenCards.isEmpty()){
+                throw new NoSuchElementException("Out of Cards");
+            }
         } else if(index >=0 && index <=3){
             visibleCards.remove(index);
-            visibleCards.addFirst(hiddenCards.removeLast());
+            if (!hiddenCards.isEmpty()) {
+                visibleCards.addFirst(hiddenCards.removeLast());
+            }
         }
     }
 
     //discard function from the visible cards
     public void removeLastCard(){
+        if (visibleCards.isEmpty() || hiddenCards.isEmpty()){
+            throw new NoSuchElementException("Out of Cards, cant discard and draw a new one.");
+        }
         visibleCards.removeLast();
         visibleCards.addFirst(hiddenCards.removeLast());
 

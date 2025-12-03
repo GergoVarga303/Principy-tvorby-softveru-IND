@@ -77,6 +77,11 @@ public class Grid {
 
     public void setActivated(GridPosition coordinate){
         neighbouringNotActivated.remove(coordinate);
+        if(!pattern.isEmpty()) {
+            SimpleEntry<Integer, Integer> pair = new SimpleEntry<>(coordinate.getX(), coordinate.getY());
+            pattern.remove(pair);
+        }
+
     }
 
     public void setActivationPattern(List<SimpleEntry<Integer,Integer>> pattern){
