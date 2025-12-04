@@ -22,6 +22,9 @@ public class Grid {
     //you can put cards only on neighbouring, not occupied positions, also you cannot put more than three cards in one
     //row or one column
     public boolean canPutCard(GridPosition coordinate){
+        if(coordinate == GridPosition.START_P33){
+            return true;
+        }
         if(board.containsKey(coordinate)){
            return false;
         }

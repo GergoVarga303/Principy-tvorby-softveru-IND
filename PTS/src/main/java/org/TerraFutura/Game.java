@@ -69,7 +69,7 @@ public class Game implements TerraFuturaInterface {
         this.onTurn = startingPlayer;
         this.turnNumber = 0;
         this.state = GameState.TakeCardNoCardDiscarded;
-        notifyObservers();
+        //notifyObservers();
     }
 
     private String buildState(Player player) {
@@ -146,7 +146,7 @@ public class Game implements TerraFuturaInterface {
 
         if(result){
             state = GameState.ActivateCard;
-            notifyObservers();
+            //notifyObservers(); //maybe error
         }else{
             System.out.println("move card failed");
         }
@@ -174,7 +174,7 @@ public class Game implements TerraFuturaInterface {
         try{
             pile.removeLastCard();
             state = GameState.TakeCardCardDiscarded;
-            notifyObservers();
+            //notifyObservers();
             return true;
         }catch (Exception e){
             System.out.println("discardLastCardFromDeck failed");
@@ -247,7 +247,7 @@ public class Game implements TerraFuturaInterface {
             state = GameState.TakeCardNoCardDiscarded;
         }
 
-        notifyObservers();
+        //notifyObservers(); //maybe error
         return true;
     }
 
@@ -263,7 +263,7 @@ public class Game implements TerraFuturaInterface {
             return false;
         }
 
-        onTurn = (onTurn + 1) % players.length;
+        //onTurn = (onTurn + 1) % players.length;
 
         if(card == 1) players[playerId].setActivationPattern(players[playerId].activationPatterns.getFirst());
         else if (card == 2)players[playerId].setActivationPattern(players[playerId].activationPatterns.getSecond());
@@ -307,10 +307,15 @@ public class Game implements TerraFuturaInterface {
             return false;
         }
         grid.endTurn();
-        if(onTurn == players.length-1) state = GameState.SelectScoringMethod;
+        //if(onTurn == players.length-1) state = GameState.SelectScoringMethod;
         onTurn = (onTurn + 1) % players.length;
-        state = GameState.SelectActivationPattern;
-        notifyObservers();
+        if(onTurn == startingPlayer){
+            state = GameState.SelectScoringMethod;
+        }
+        else {
+            state = GameState.SelectActivationPattern;
+        }
+        //notifyObservers();
         return true;
     }
 
@@ -347,9 +352,9 @@ public class Game implements TerraFuturaInterface {
         selected.selectThisMethodAndCalculate();
         System.out.println("For player: " + playerId + " " + selected.state());
         
-        if (onTurn == players.length -1) {
+        if (onTurn == startingPlayer) {
             state = GameState.Finish;
-            notifyObservers();
+            //notifyObservers();
         }
         return true;
     }
