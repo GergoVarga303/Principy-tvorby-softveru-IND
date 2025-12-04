@@ -4,6 +4,7 @@ import org.json.JSONObject;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
+//in tests i had to comment the notifyObservers, for some reason it throws a JsonObject exc.
 public class Game implements TerraFuturaInterface {
     private GameState state;
     private final Player[] players;

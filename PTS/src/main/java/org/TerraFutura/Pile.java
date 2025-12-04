@@ -36,10 +36,10 @@ public class Pile {
             throw new NoSuchElementException("Out of Cards!");
         }
         if(index == -1){
-            hiddenCards.removeLast();
             if(hiddenCards.isEmpty()){
                 throw new NoSuchElementException("Out of Cards");
             }
+            hiddenCards.removeLast();
         } else if(index >=0 && index <=3){
             visibleCards.remove(index);
             if (!hiddenCards.isEmpty()) {

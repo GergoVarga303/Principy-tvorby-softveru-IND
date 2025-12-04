@@ -22,7 +22,7 @@ public class GameIntegrationTest {
 
     @Before
     public void setup() {
-        //create a simple observer for testing
+//        //observer for testing
 //        gameObserver = new GameObserver() {
 //            @Override
 //            public void notifyAll(Map<Integer, String> newState) {
